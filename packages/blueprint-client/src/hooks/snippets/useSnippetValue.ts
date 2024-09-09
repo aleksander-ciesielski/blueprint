@@ -3,7 +3,7 @@ import { match } from "ts-pattern";
 import { useSnippet } from "~/hooks/snippets/useSnippet";
 import { useDispatch } from "~/store/store";
 import { snippetCodeUpdated } from "~/store/snippetSlice";
-import { programCodeUpdated } from "~/store/programSlice";
+import { contentUpdated, programCodeUpdated } from "~/store/programSlice";
 import { SnippetType } from "~/entities/snippet/Snippet";
 
 function affectsBuildOutput(snippetType: SnippetType): boolean {
@@ -34,6 +34,8 @@ export function useSnippetValue(
       snippetId,
       code,
     }));
+
+    dispatch(contentUpdated());
 
     if (affectsBuildOutput(snippetType)) {
       dispatch(programCodeUpdated());

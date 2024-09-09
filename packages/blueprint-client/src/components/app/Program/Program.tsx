@@ -8,7 +8,9 @@ import {
   AiFillPauseCircle,
   AiFillPlayCircle,
 } from "react-icons/ai";
-import { FaArrowCircleDown, FaArrowCircleUp, FaCircle } from "react-icons/fa";
+import {
+  BsLightningFill,
+} from "react-icons/bs";
 import { RiGitForkFill, RiSaveFill } from "react-icons/ri";
 import { match } from "ts-pattern";
 import type { HttpContracts } from "@blueprint/contracts";
@@ -57,6 +59,7 @@ export function Program(props: ProgramControlsProps) {
   const positiveReactions = useSelector((state) => state.program.positiveReactions);
   const negativeReactions = useSelector((state) => state.program.negativeReactions);
   const userReaction = useSelector((state) => state.program.userReaction);
+  const isLoggedIn = useSelector((state) => (state.auth.userId !== undefined));
   const isAuthor = (authorId === userId);
   const progress = (buildInProgress)
     ? 0
@@ -143,12 +146,13 @@ export function Program(props: ProgramControlsProps) {
             onPress={editName}
           />}
         </S.ProgramNameContainer>
-        {(programId !== undefined) && <ProgramReactions
+        {(programId !== undefined && props.mode === "view") && <ProgramReactions
           positiveReactions={positiveReactions}
           negativeReactions={negativeReactions}
           userReaction={userReaction}
           programId={programId}
           onNewReactions={handleNewReactions}
+          disabled={!isLoggedIn}
         />}
       </S.ProgramInfo>
       <S.ControlsWrapper>
@@ -278,21 +282,23 @@ export function Program(props: ProgramControlsProps) {
                   isDisabled={buildInProgress || (autoplaySpeed === ProgramAutoplaySpeed.Slow)}
                   isSelected={autoplaySpeed === ProgramAutoplaySpeed.Slow}
                   onPress={() => programControlService.setAutoplaySpeed(ProgramAutoplaySpeed.Slow)}
-                  icon={FaArrowCircleDown}
+                  icon={BsLightningFill}
                   rounded="left"
+                  iconOpacity="0.33"
                 />
                 <Button
                   isDisabled={buildInProgress || (autoplaySpeed === ProgramAutoplaySpeed.Normal)}
                   isSelected={autoplaySpeed === ProgramAutoplaySpeed.Normal}
                   onPress={() => programControlService.setAutoplaySpeed(ProgramAutoplaySpeed.Normal)}
-                  icon={FaCircle}
+                  icon={BsLightningFill}
                   rounded="no"
+                  iconOpacity="0.66"
                 />
                 <Button
                   isDisabled={buildInProgress || (autoplaySpeed === ProgramAutoplaySpeed.Fast)}
                   isSelected={autoplaySpeed === ProgramAutoplaySpeed.Fast}
                   onPress={() => programControlService.setAutoplaySpeed(ProgramAutoplaySpeed.Fast)}
-                  icon={FaArrowCircleUp}
+                  icon={BsLightningFill}
                   rounded="right"
                 />
               </S.ButtonGroup>

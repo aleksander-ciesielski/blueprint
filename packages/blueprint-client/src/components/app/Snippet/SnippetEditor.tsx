@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "~/store/store";
 import { useEventBus } from "~/hooks/useEventBus";
 import { visualizerSnippetEmbedded } from "~/store/snippetSlice";
 import { onEditorDecorationClick } from "~/hooks/editor/onEditorDecorationClick";
-import { programCodeUpdated } from "~/store/programSlice";
+import { contentUpdated, programCodeUpdated } from "~/store/programSlice";
 import { useTheme } from "~/hooks/theme/useTheme";
 
 const EDITOR_MIN_HEIGHT_PX = 24;
@@ -317,6 +317,7 @@ export function SnippetEditor(props: SnippetEditorProps) {
       lineNumber,
     }));
 
+    dispatch(contentUpdated());
     dispatch(programCodeUpdated());
   }, [allowEmbeddingVisualizerSnippet, readOnly, editor, groupId, snippetId]);
 

@@ -16,6 +16,7 @@ export interface ButtonProps extends AriaButtonProps {
   sharpEdges?: boolean;
   isLoading?: boolean;
   isSelected?: boolean;
+  iconOpacity?: string;
   href?: string;
 }
 
@@ -32,12 +33,13 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
   const sharpEdges = props.sharpEdges ?? true;
   const color = props.color ?? SystemTokenColor.Default;
   const isIconButton = (props.children === undefined);
+  const iconOpacity = props.iconOpacity ?? "1";
   const href = props.href;
 
   const computedIcon = React.useMemo(() => {
     if (isLoading) {
       return (
-        <S.Icon aria-hidden={true} $size={size}>
+        <S.Icon aria-hidden={true} $size={size} $opacity={iconOpacity}>
           <Spinner />
         </S.Icon>
       );
@@ -45,7 +47,7 @@ export function Button(props: React.PropsWithChildren<ButtonProps>) {
 
     if (icon !== undefined) {
       return (
-        <S.Icon aria-hidden={true} $size={size}>
+        <S.Icon aria-hidden={true} $size={size} $opacity={iconOpacity}>
           {React.createElement(icon, {
             "aria-label": iconLabel,
           })}

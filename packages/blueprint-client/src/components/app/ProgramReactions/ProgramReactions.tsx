@@ -11,6 +11,7 @@ export interface ProgramReactionsProps {
   negativeReactions: number,
   userReaction: HttpContracts.ProgramReaction,
   onNewReactions(okResponse: HttpContracts.ReactOnProgramOkResponse): void;
+  disabled: boolean;
 }
 
 export function ProgramReactions(props: ProgramReactionsProps) {
@@ -46,6 +47,7 @@ export function ProgramReactions(props: ProgramReactionsProps) {
         sharpEdges={true}
         rounded="left"
         icon={MdThumbUp}
+        isDisabled={props.disabled}
         onPress={() => handleReactionButtonClick(HttpContracts.ProgramReaction.Positive)}
       >
         <>{props.positiveReactions}</>
@@ -55,6 +57,7 @@ export function ProgramReactions(props: ProgramReactionsProps) {
         sharpEdges={true}
         rounded="right"
         icon={MdThumbDown}
+        isDisabled={props.disabled}
         onPress={() => handleReactionButtonClick(HttpContracts.ProgramReaction.Negative)}
       >
         <>{props.negativeReactions}</>

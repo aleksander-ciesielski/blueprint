@@ -14,7 +14,7 @@ import { useTranslation } from "~/hooks/translation/useTranslation";
 import { Button } from "~/components/ui/Button/Button";
 import { SystemTokenSize } from "~/themes/tokens/system/size/SystemTokenSize";
 import { useSnippetHighlights } from "~/hooks/snippets/useSnippetHighlights";
-import { programCodeUpdated } from "~/store/programSlice";
+import { contentUpdated, programCodeUpdated } from "~/store/programSlice";
 
 export interface VisualizerSnippetProps {
   groupId: string;
@@ -53,11 +53,13 @@ export function VisualizationSnippet(props: VisualizerSnippetProps) {
       previousSnippetId: snippetId,
       type: SnippetType.Source,
     }));
+    dispatch(contentUpdated());
     dispatch(programCodeUpdated());
   }, [groupId, snippetId]);
 
   const removeSnippet = React.useCallback(() => {
     dispatch(snippetRemoved({ groupId, snippetId }));
+    dispatch(contentUpdated());
     dispatch(programCodeUpdated());
   }, [groupId, snippetId]);
 

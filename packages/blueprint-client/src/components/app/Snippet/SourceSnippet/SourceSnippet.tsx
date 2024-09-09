@@ -15,7 +15,7 @@ import { useTranslation } from "~/hooks/translation/useTranslation";
 import { SystemTokenSize } from "~/themes/tokens/system/size/SystemTokenSize";
 import { Button } from "~/components/ui/Button/Button";
 import { useSnippetHighlights } from "~/hooks/snippets/useSnippetHighlights";
-import { programCodeUpdated } from "~/store/programSlice";
+import { contentUpdated, programCodeUpdated } from "~/store/programSlice";
 
 export interface SourceSnippetProps {
   groupId: string;
@@ -74,11 +74,13 @@ export function SourceSnippet(props: SourceSnippetProps) {
       previousSnippetId: snippetId,
       type: SnippetType.Visualizer,
     }));
+    dispatch(contentUpdated());
     dispatch(programCodeUpdated());
   }, [groupId, snippetId]);
 
   const removeSnippet = React.useCallback(() => {
     dispatch(snippetRemoved({ groupId, snippetId }));
+    dispatch(contentUpdated());
     dispatch(programCodeUpdated());
   }, [groupId, snippetId]);
 
@@ -95,6 +97,10 @@ export function SourceSnippet(props: SourceSnippetProps) {
 
     const models = monaco.editor.getModels();
     models.forEach((model) => {
+      if (model.getLanguageId() !== "typescript") {
+        return;
+      }
+
       monaco.languages.typescript.getTypeScriptWorker().then((worker) => {
         worker(model.uri).then((client) => {
           client.getSemanticDiagnostics(model.uri.toString()).then((diagnostics) => {

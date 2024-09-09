@@ -12,7 +12,7 @@ import { SystemTokenSize } from "~/themes/tokens/system/size/SystemTokenSize";
 import { useDispatch } from "~/store/store";
 import { useTranslation } from "~/hooks/translation/useTranslation";
 import { snippetGroupAdded } from "~/store/snippetSlice";
-import { programCodeUpdated } from "~/store/programSlice";
+import { contentUpdated, programCodeUpdated } from "~/store/programSlice";
 
 export interface SnippetGroupListProps {
   snippetGroups: SnippetGroup[];
@@ -45,6 +45,8 @@ export function SnippetGroupList(props: SnippetGroupListProps) {
         type,
       }],
     }));
+
+    dispatch(contentUpdated());
 
     if (affectsBuildOutput(type)) {
       dispatch(programCodeUpdated());

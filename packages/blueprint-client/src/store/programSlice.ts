@@ -1,7 +1,5 @@
-import type {
+import { type AsyncThunk, createAsyncThunk, createSlice,
  PayloadAction } from "@reduxjs/toolkit";
-import { type AsyncThunk, createAsyncThunk, createSlice 
-} from "@reduxjs/toolkit";
 import { HttpContracts } from "@blueprint/contracts";
 import { match } from "ts-pattern";
 import { StatusCodes } from "http-status-codes";
@@ -171,6 +169,9 @@ export const programSlice = createSlice({
       state.negativeReactions = action.payload?.negativeReactions ?? 0;
       state.userReaction = action.payload?.userReaction ?? HttpContracts.ProgramReaction.None;
     },
+    contentUpdated(state) {
+      state.dirty = true;
+    },
     programCodeUpdated(state) {
       state.dirty = true;
       state.output = undefined;
@@ -271,6 +272,7 @@ export const {
   programCodeUpdated,
   programNameUpdated,
   reactionsUpdated,
+  contentUpdated,
   currentFrameDecremented,
   currentFrameIncremented,
   currentFrameChanged,

@@ -53,9 +53,10 @@ export const ButtonLink = styled(Link)<{
   text-decoration: none;
 `;
 
-export const Icon = styled(ReactIconsContextWrapper)<{ $size?: SystemTokenSize }>`
+export const Icon = styled(ReactIconsContextWrapper)<{ $size?: SystemTokenSize; $opacity: string }>`
   width: ${(props) => props.theme.resolveSizeBasedToken(props.$size, props.theme.tokens.system.button.icon.size)};
   height: ${(props) => props.theme.resolveSizeBasedToken(props.$size, props.theme.tokens.system.button.icon.size)};
+  opacity: ${(props) => props.$opacity};
 `;
 
 export const Text = styled.span<{ $size?: SystemTokenSize }>`
