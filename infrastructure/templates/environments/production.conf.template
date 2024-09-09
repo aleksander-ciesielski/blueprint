@@ -1,0 +1,82 @@
+server {
+  server_name www.production.blueprint.aleksanderciesiel.ski;
+  listen 443 ssl;
+
+  client_max_body_size 100M;
+
+  return 301 https://production.blueprint.aleksanderciesiel.ski$request_uri;
+}
+
+server {
+  server_name www.production.blueprint.aleksanderciesiel.ski production.blueprint.aleksanderciesiel.ski;
+  listen 80;
+
+  client_max_body_size 100M;
+
+  return 301 https://production.blueprint.aleksanderciesiel.ski$request_uri;
+}
+
+server {
+  server_name production.blueprint.aleksanderciesiel.ski;
+  listen 443 ssl;
+
+  client_max_body_size 100M;
+
+  location / {
+    resolver 127.0.0.11;
+
+    set $target production_client.production;
+    proxy_pass http://$target;
+    proxy_redirect off;
+
+    client_max_body_size 100M;
+
+    proxy_pass_header Content-Type;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+}
+
+server {
+  server_name api.production.blueprint.aleksanderciesiel.ski;
+  listen 80;
+
+  client_max_body_size 100M;
+
+  return 301 api.production.blueprint.aleksanderciesiel.ski$request_uri;
+}
+
+server {
+  server_name api.production.blueprint.aleksanderciesiel.ski;
+  listen 443 ssl;
+
+  client_max_body_size 100M;
+
+  location / {
+    resolver 127.0.0.11;
+
+    client_max_body_size 100M;
+
+    set $target production_server.production;
+    proxy_pass http://$target;
+    proxy_redirect off;
+
+    proxy_pass_header Content-Type;
+
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_hide_header Access-Control-Allow-Origin;
+    proxy_hide_header Access-Control-Allow-Credentials;
+    proxy_hide_header Access-Control-Allow-Methods;
+    proxy_hide_header Access-Control-Allow-Headers;
+
+    add_header Access-Control-Allow-Origin "https://production.blueprint.aleksanderciesiel.ski" always;
+    add_header Access-Control-Allow-Credentials true always;
+    add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE" always;
+    add_header Access-Control-Allow-Headers "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization" always;
+  }
+}

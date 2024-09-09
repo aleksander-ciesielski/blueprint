@@ -1,0 +1,57 @@
+version: "3.8"
+services:
+  production_server:
+    image: "aleksanderciesielski/blueprint-server:${TAG}"
+    environment:
+      NODE_ENV: production
+      PORT: 80
+      DB_HOST: production_db
+      DB_PORT: 5432
+      DB_NAME: blueprint
+      DB_USER: postgres
+      DB_PASS: ${POSTGRES_PASSWORD}
+      REFRESH_TOKEN_PRIVATE_KEY: ${REFRESH_TOKEN_PRIVATE_KEY}
+      REFRESH_TOKEN_ID_LENGTH: 32
+      REFRESH_TOKEN_VALIDITY_SECONDS: 7776000
+      ACCESS_TOKEN_PRIVATE_KEY: ${ACCESS_TOKEN_PRIVATE_KEY}
+      ACCESS_TOKEN_VALIDITY_SECONDS: 300
+      CLIENT_URL: https://production.blueprint.aleksanderciesiel.ski
+      PASSWORD_HASH_ROUNDS: 12
+      HTTP_BODY_SIZE_LIMIT: 50mb
+    networks:
+      - production
+    depends_on:
+      production_db:
+        condition: service_healthy
+  production_client:
+    image: "aleksanderciesielski/blueprint-client:${TAG}"
+    environment:
+      PORT: 80
+      SERVER_HOST: "api.production.blueprint.aleksanderciesiel.ski"
+      NEXT_PUBLIC_API_BASE_URL: "https://api.production.blueprint.aleksanderciesiel.ski"
+    networks:
+      - production
+  production_db:
+    image: postgres:15.3
+    environment:
+      POSTGRES_DB: blueprint
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "26500:5432"
+    volumes:
+      - production_db_data:/var/lib/postgresql/data
+    networks:
+      - production
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  production_db_data:
+    driver: local
+networks:
+  production:
+    external:
+      name: production

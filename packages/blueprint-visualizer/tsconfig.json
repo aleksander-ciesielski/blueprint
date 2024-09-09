@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "include": ["./src"],
+  "compilerOptions": {
+    "outDir": "./dist/impl",
+    "baseUrl": "./src",
+    "moduleResolution": "bundler",
+    "module": "es2022",
+    "skipLibCheck": false
+  }
+}

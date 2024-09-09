@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  proxy:
+    image: aleksanderciesielski/blueprint-proxy:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./templates:/etc/nginx/templates
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - /etc/blueprint/cert:/etc/ssl_certificate
+    networks:
+      - production
+networks:
+  production:
+    external:
+      name: production
