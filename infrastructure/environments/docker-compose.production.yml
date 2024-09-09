@@ -35,8 +35,8 @@ services:
   production_db:
     image: postgres:15.3
     environment:
-      POSTGRES_DB: blueprint
-      POSTGRES_USER: postgres
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "26500:5432"
@@ -45,7 +45,7 @@ services:
     networks:
       - production
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-U", "${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
