@@ -9,7 +9,6 @@ plugins:
 extends:
   - "plugin:@typescript-eslint/strict"
   - "plugin:@next/next/recommended"
-  - "plugin:storybook/recommended"
   - "airbnb-base"
   - "airbnb-typescript/base"
 rules:

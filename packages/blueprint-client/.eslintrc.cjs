@@ -3,6 +3,7 @@ const path = require("node:path");
 module.exports = {
   parser: "@typescript-eslint/parser",
   extends: [
+    "plugin:@typescript-eslint/strict",
     "plugin:@next/next/recommended",
   ],
   parserOptions: {
