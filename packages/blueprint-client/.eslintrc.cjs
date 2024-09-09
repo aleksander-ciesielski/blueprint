@@ -2,6 +2,9 @@ const path = require("node:path");
 
 module.exports = {
   parser: "@typescript-eslint/parser",
+  extends: [
+    "plugin:@next/next/recommended",
+  ],
   parserOptions: {
     tsconfigRootDir: __dirname,
     project: ["./tsconfig.json"],

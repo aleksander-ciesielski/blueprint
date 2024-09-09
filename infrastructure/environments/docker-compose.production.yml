@@ -29,6 +29,7 @@ services:
       PORT: 80
       SERVER_HOST: "api.production.blueprint.aleksanderciesiel.ski"
       NEXT_PUBLIC_API_BASE_URL: "https://api.production.blueprint.aleksanderciesiel.ski"
+      HTTP_ORIGIN: "https://production.blueprint.aleksanderciesiel.ski"
     networks:
       - production
   production_db:
