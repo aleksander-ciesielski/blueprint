@@ -1,5 +1,5 @@
 import { mock } from "jest-mock-extended";
-import type { InsertResult, Repository } from "typeorm";
+import type { EntityManager, Repository } from "typeorm";
 import type { DatabaseService } from "~/services/DatabaseService";
 import { ProgramService } from "~/services/ProgramService";
 import { User } from "~/models/entities/User";
@@ -8,7 +8,11 @@ import { ProgramReaction, ProgramReactionType } from "~/models/entities/ProgramR
 import { IllegalReactionTypeError } from "~/errors/program/IllegalReactionTypeError";
 import { ProgramSnippetType } from "~/models/entities/ProgramSnippet";
 
-const databaseService = mock<DatabaseService>();
+const databaseService = mock<DatabaseService>({
+  connection: {
+    transaction: async (fn) => (fn as ((manager: EntityManager) => Promise<void>))(mock()),
+  },
+});
 const userRepository = mock<Repository<User>>();
 const programRepository = mock<Repository<Program>>();
 const reactionRepository = mock<Repository<ProgramReaction>>();
@@ -28,8 +32,8 @@ function createProgramService(): ProgramService {
 describe("ProgramService (integration)", () => {
   describe("createProgram", () => {
     it("inserts a new Program into the database", async () => {
-      const insertResult = mock<InsertResult>({ identifiers: [mock<Program>({ id: "1" })] });
-      programRepository.insert.mockResolvedValue(insertResult);
+      const insertResult = mock<Program>({ id: "1" });
+      programRepository.save.mockResolvedValue(insertResult);
       programRepository.findOne.mockResolvedValue(mock<Program>({ id: "1" }));
       userRepository.findOneBy.mockResolvedValue(mock<User>({
         id: "USER_ID",
@@ -55,29 +59,33 @@ describe("ProgramService (integration)", () => {
         ],
       );
 
-      expect(programRepository.insert).toHaveBeenCalledTimes(1);
-      expect(programRepository.insert).toHaveBeenCalledWith(expect.objectContaining({
+      expect(programRepository.save).toHaveBeenCalledTimes(1);
+      expect(programRepository.save).toHaveBeenCalledWith(expect.objectContaining({
         author: {
           id: "USER_ID",
         },
         name: "MY_PROGRAM",
-        snippets: [
-          {
-            type: ProgramSnippetType.Source,
-            content: "const x = 123;",
-          },
-          {
-            type: ProgramSnippetType.Visualizer,
-            content: "const $x = visualizer.scalar({ get: () => x, name: 'x' })",
-          },
-        ],
+        snippetGroups: expect.arrayContaining([
+          expect.objectContaining({
+            snippets: expect.arrayContaining([
+              expect.objectContaining({
+                type: ProgramSnippetType.Source,
+                contentBase64: "const x = 123;",
+              }),
+              expect.objectContaining({
+                type: ProgramSnippetType.Visualizer,
+                contentBase64: "const $x = visualizer.scalar({ get: () => x, name: 'x' })",
+              }),
+            ]),
+          }),
+        ]),
       }));
     });
 
     it("returns a Program entity if the insertion was successful", async () => {
-      const insertResult = mock<InsertResult>({ identifiers: [mock<Program>({ id: "1" })] });
+      const insertResult = mock<Program>({ id: "1" });
       programRepository.findOne.mockResolvedValue(mock<Program>({ id: "1" }));
-      programRepository.insert.mockResolvedValue(insertResult);
+      programRepository.save.mockResolvedValue(insertResult);
       userRepository.findOneBy.mockResolvedValue(mock<User>({
         id: "USER_ID",
       }));
@@ -89,7 +97,7 @@ describe("ProgramService (integration)", () => {
         [],
       );
 
-      expect(program?.id).toBe(insertResult.identifiers[0]!.id);
+      expect(program?.id).toBe(insertResult.id);
     });
   });
 
@@ -154,11 +162,11 @@ describe("ProgramService (integration)", () => {
         ProgramReactionType.Positive,
       );
 
-      expect(reactionRepository.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      expect(reactionRepository.insert).toHaveBeenCalledWith(expect.objectContaining({
         userId: "321",
         program: { id: "123" },
         type: ProgramReactionType.Positive,
-      }), expect.anything());
+      }));
     });
 
     it("throws an IllegalReactionTypeError if the given reaction type is not allowed", async () => {

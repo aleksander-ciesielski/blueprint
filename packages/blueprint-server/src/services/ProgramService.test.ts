@@ -1,5 +1,5 @@
 import { mock } from "jest-mock-extended";
-import type { Repository } from "typeorm";
+import type { EntityManager, Repository } from "typeorm";
 import type { DatabaseService } from "~/services/DatabaseService";
 import { User } from "~/models/entities/User";
 import { ProgramService } from "~/services/ProgramService";
@@ -10,7 +10,11 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
-const databaseService = mock<DatabaseService>();
+const databaseService = mock<DatabaseService>({
+  connection: {
+    transaction: async (fn) => (fn as ((manager: EntityManager) => Promise<void>))(mock()),
+  },
+});
 const programRepository = mock<Repository<Program>>();
 const userRepository = mock<Repository<User>>();
 const reactionRepository = mock<Repository<ProgramReaction>>();
@@ -32,6 +36,7 @@ describe("ProgramService", () => {
       userRepository.findOneBy
         .mockResolvedValue(mock<User>());
       programRepository.findOne.mockResolvedValue(mock<Program>({ id: "1" }));
+      programRepository.save.mockResolvedValue(mock<Program>({ id: "1" }));
 
       programRepository.insert.mockResolvedValue({
         identifiers: [{ id: "1" }],
@@ -42,7 +47,7 @@ describe("ProgramService", () => {
       const programService = createProgramService();
       const result = await programService.createProgram(userEmail, name, []);
 
-      expect(programRepository.insert).toHaveBeenCalledWith(expect.objectContaining({
+      expect(programRepository.save).toHaveBeenCalledWith(expect.objectContaining({
         name,
       }));
 
@@ -64,11 +69,11 @@ describe("ProgramService", () => {
         ProgramReactionType.Negative,
       );
 
-      expect(reactionRepository.upsert).toHaveBeenCalledWith(expect.objectContaining({
+      expect(reactionRepository.insert).toHaveBeenCalledWith(expect.objectContaining({
         userId: "123",
         program: { id: "321" },
         type: ProgramReactionType.Negative,
-      }), expect.anything());
+      }));
     });
   });
 });
